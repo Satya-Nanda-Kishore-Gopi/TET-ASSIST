@@ -9,12 +9,10 @@ import { APP_CONFIG } from '@/lib/constants/theme';
 const routeTitles: Record<string, { title: string; telugu: string }> = {
   '/': { title: 'Dashboard', telugu: 'డ్యాష్‌బోర్డ్' },
   '/chat': { title: 'Ask AI', telugu: 'ఏఐ అసిస్టెంట్' },
-  '/questions': { title: 'Question Bank', telugu: 'ప్రశ్నల నిధి' },
   '/tests': { title: 'Tests', telugu: 'పరీక్షలు' },
   '/study': { title: 'Study', telugu: 'స్టడీ మెటీరియల్' },
   '/study-plan': { title: 'Study Plan', telugu: 'స్టడీ ప్లాన్' },
   '/analysis': { title: 'Analysis', telugu: 'పరీక్షా విశ్లేషణ' },
-  '/documents': { title: 'My Documents', telugu: 'నా డాక్యుమెంట్లు' },
   '/admin': { title: 'Admin Ingestion Console', telugu: 'నిర్వాహక విభాగం' },
   '/profile': { title: 'Profile', telugu: 'ప్రొఫైల్' },
 };
