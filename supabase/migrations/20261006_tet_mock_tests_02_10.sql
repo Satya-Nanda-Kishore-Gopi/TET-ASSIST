@@ -9,24 +9,23 @@ DECLARE
   v_test_no INTEGER;
 BEGIN
   FOR v_test_no IN 2..10 LOOP
-    INSERT INTO public.tet_tests (
-      title, description, test_type, duration_minutes, total_questions
-    )
-    VALUES (
-      format('Special APTET Paper 1A Mock Test %s', lpad(v_test_no::text, 2, '0')),
-      format('Full-length Paper 1A mock test %s with 30 questions each from CDP, Mathematics, Telugu and English.', lpad(v_test_no::text, 2, '0')),
-      'PAPER_1A_MOCK',
-      150,
-      120
-    )
-    ON CONFLICT DO NOTHING
-    RETURNING id INTO v_test_id;
+    SELECT id INTO v_test_id
+    FROM public.tet_tests
+    WHERE title = format('Special APTET Paper 1A Mock Test %s', lpad(v_test_no::text, 2, '0'))
+    LIMIT 1;
 
     IF v_test_id IS NULL THEN
-      SELECT id INTO v_test_id
-      FROM public.tet_tests
-      WHERE title = format('Special APTET Paper 1A Mock Test %s', lpad(v_test_no::text, 2, '0'))
-      LIMIT 1;
+      INSERT INTO public.tet_tests (
+        title, description, test_type, duration_minutes, total_questions
+      )
+      VALUES (
+        format('Special APTET Paper 1A Mock Test %s', lpad(v_test_no::text, 2, '0')),
+        format('Full-length Paper 1A mock test %s with 30 questions each from CDP, Mathematics, Telugu and English.', lpad(v_test_no::text, 2, '0')),
+        'PAPER_1A_MOCK',
+        150,
+        120
+      )
+      RETURNING id INTO v_test_id;
     END IF;
 
     INSERT INTO public.tet_test_questions (test_id, question_id, question_order)
