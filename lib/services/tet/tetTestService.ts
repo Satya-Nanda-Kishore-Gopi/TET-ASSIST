@@ -106,6 +106,21 @@ export class TetTestService {
     };
   }
 
+  static async listPaper1AMockTests(): Promise<TetTest[]> {
+    const supabase = this.getClient();
+    const { data, error } = await supabase
+      .from('tet_tests')
+      .select('id,title,description,test_type,duration_minutes,total_questions,created_at')
+      .in('test_type', ['PAPER_1A', 'PAPER_1A_MOCK'])
+      .order('title', { ascending: true });
+
+    if (error) {
+      throw new Error(`Failed to load mock tests: ${error.message}`);
+    }
+
+    return data || [];
+  }
+
   static async getCurrentPaper1A(): Promise<TetTestWithQuestions> {
     return this.getTest(this.PAPER_1A_TEST_ID);
   }
