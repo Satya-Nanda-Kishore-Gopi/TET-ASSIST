@@ -44,11 +44,9 @@ export const APP_CONFIG = {
 export const NAV_ITEMS = [
   { href: '/', label: 'Home', labelTelugu: 'హోమ్', icon: 'Home' },
   { href: '/chat', label: 'Ask AI', labelTelugu: 'Ask AI', icon: 'Bot' },
-  { href: '/questions', label: 'Question Bank', labelTelugu: 'ప్రశ్నల నిధి', icon: 'HelpCircle' },
   { href: '/tests', label: 'Tests', labelTelugu: 'పరీక్షలు', icon: 'FileText' },
   { href: '/study', label: 'Study', labelTelugu: 'స్టడీ మెటీరియల్', icon: 'BookOpen' },
   { href: '/study-plan', label: 'Study Plan', labelTelugu: 'స్టడీ ప్లాన్', icon: 'Calendar' },
   { href: '/analysis', label: 'Analysis', labelTelugu: 'విశ్లేషణ', icon: 'BarChart3' },
-  { href: '/documents', label: 'My Documents', labelTelugu: 'డాక్యుమెంట్లు', icon: 'Files' },
   { href: '/admin', label: 'Admin Ingest', labelTelugu: 'నిర్వాహక విభాగం', icon: 'ShieldCheck' },
 ] as const;
