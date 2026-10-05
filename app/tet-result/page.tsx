@@ -11,6 +11,9 @@ export default function TetResultPage(){
   <p className="mt-2 text-slate-500">{r.status==='expired'?'Time expired. The test was submitted automatically.':'Test submitted successfully.'}</p>
   <div className="my-8 text-6xl font-extrabold text-emerald-600">{r.score}/{r.totalMarks}</div><p className="text-lg font-semibold">{pct}%</p>
   <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">{[['Correct',r.correct,'bg-emerald-50'],['Incorrect',r.incorrect,'bg-red-50'],['Unanswered',r.unanswered,'bg-slate-100'],['Answered',r.answered,'bg-blue-50']].map(([a,b,c])=><div key={String(a)} className={'rounded-xl p-4 '+c}><b className="block text-2xl">{b}</b><span className="text-xs">{a}</span></div>)}</div>
-  <button onClick={()=>router.push('/tests')} className="mt-8 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white">Back to Tests</button>
+  <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+   <button onClick={()=>r.attemptId && router.push('/tet-review/'+r.attemptId)} className="rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white">Review Answers</button>
+   <button onClick={()=>router.push('/tests')} className="rounded-xl border border-slate-200 px-6 py-3 font-semibold">Back to Tests</button>
+  </div>
  </div></main>
 }
