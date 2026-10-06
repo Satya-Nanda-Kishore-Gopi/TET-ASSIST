@@ -27,8 +27,6 @@ export function TestsView() {
   const [mockError, setMockError] = useState('');
 
   const officialPapers = TestsService.getOfficialPapers();
-  const previousPapers = TestsService.getPreviousPapers();
-  const modelPapers = TestsService.getModelPapers();
 
   useEffect(() => {
     let cancelled = false;
@@ -56,8 +54,6 @@ export function TestsView() {
 
   const tabs: Array<{ id: TestTab; label: string; telugu: string; count?: number }> = [
     { id: 'official', label: 'Official Papers', telugu: 'ప్రభుత్వ అధికారిక పేపర్లు', count: 10 },
-    { id: 'previous', label: 'Previous Papers', telugu: 'గత సంవత్సరాల పేపర్లు', count: 2 },
-    { id: 'model', label: 'Model Papers', telugu: 'మోడల్ పేపర్లు', count: 2 },
     { id: 'practice', label: 'Practice Tests', telugu: 'సబ్జెక్ట్ ప్రాక్టీస్', count: 5 },
     { id: 'mock', label: 'Mock Tests', telugu: 'పూర్తి మాక్ టెస్టులు', count: 10 },
   ];
@@ -184,12 +180,6 @@ export function TestsView() {
           </div>
 
           {activeTab === 'official' && officialPapers.slice(0, 2).map((paper) => (
-            <Card key={paper.id}><CardContent className="p-5"><b>{paper.title}</b><p className="text-sm text-brand-text-muted mt-1">Coming soon</p></CardContent></Card>
-          ))}
-          {activeTab === 'previous' && previousPapers.slice(0, 2).map((paper) => (
-            <Card key={paper.id}><CardContent className="p-5"><b>{paper.title}</b><p className="text-sm text-brand-text-muted mt-1">Coming soon</p></CardContent></Card>
-          ))}
-          {activeTab === 'model' && modelPapers.slice(0, 2).map((paper) => (
             <Card key={paper.id}><CardContent className="p-5"><b>{paper.title}</b><p className="text-sm text-brand-text-muted mt-1">Coming soon</p></CardContent></Card>
           ))}
           {activeTab === 'practice' && (
