@@ -142,15 +142,6 @@ export class TetAnalyticsService {
 
     if (answerError) throw new Error(answerError.message);
 
-    const questionIds = [...new Set((answers || []).map((a) => a.question_id))];
-    const { data: questions, error: questionError } = await supabase
-      .from('question_bank')
-      .select('question_id,subject')
-      .in('question_id', questionIds);
-
-    if (questionError) throw new Error(questionError.message);
-
-    const subjectMap = new Map((questions || []).map((q) => [q.question_id, q.subject]));
     const { data: testQuestions, error: testQuestionError } = await supabase
       .from('tet_test_questions')
       .select('test_id,question_id')
@@ -158,9 +149,16 @@ export class TetAnalyticsService {
 
     if (testQuestionError) throw new Error(testQuestionError.message);
 
-    const testQuestionIds = (testQuestions || [])
-      .map((row) => row.question_id)
-      .filter((id) => subjectMap.has(id));
+    const allQuestionIds = [...new Set((testQuestions || []).map((row) => row.question_id))];
+    const { data: questions, error: questionError } = await supabase
+      .from('question_bank')
+      .select('question_id,subject')
+      .in('question_id', allQuestionIds);
+
+    if (questionError) throw new Error(questionError.message);
+
+    const subjectMap = new Map((questions || []).map((q) => [q.question_id, q.subject]));
+    const testQuestionIds = allQuestionIds;
 
     const subjects = new Map<string, { answered: number; correct: number; totalQuestions: number }>();
 
