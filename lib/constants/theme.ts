@@ -48,5 +48,4 @@ export const NAV_ITEMS = [
   { href: '/study', label: 'Study', labelTelugu: 'స్టడీ మెటీరియల్', icon: 'BookOpen' },
   { href: '/study-plan', label: 'Study Plan', labelTelugu: 'స్టడీ ప్లాన్', icon: 'Calendar' },
   { href: '/analysis', label: 'Analysis', labelTelugu: 'విశ్లేషణ', icon: 'BarChart3' },
-  { href: '/admin', label: 'Admin Ingest', labelTelugu: 'నిర్వాహక విభాగం', icon: 'ShieldCheck' },
 ] as const;
