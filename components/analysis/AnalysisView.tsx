@@ -75,7 +75,10 @@ export function AnalysisView() {
           <Badge variant="neutral">Live Test Data</Badge>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-text">పరీక్షా విశ్లేషణ (Preparation Analysis)</h2>
-        <p className="text-sm text-brand-text-muted max-w-2xl">Your performance is calculated from completed TET attempts stored in Supabase.</p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-brand-text-muted max-w-2xl">Your performance is calculated from completed TET attempts stored in Supabase.</p>
+          <Link href="/test-history"><Button size="sm" variant="secondary">Full Test History</Button></Link>
+        </div>
       </div>
 
       <div className="flex overflow-x-auto gap-2 pb-1 border-b border-brand-border no-scrollbar">
