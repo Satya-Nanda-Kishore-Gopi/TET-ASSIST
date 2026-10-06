@@ -14,8 +14,8 @@ function LoginForm() {
   const returnUrl = searchParams.get('returnUrl') || '/';
 
   const { login } = useAuth();
-  const [mobile, setMobile] = useState('');
-  const [password, setPassword] = useState('');
+  const [mobile, setMobile] = useState('1234567890');
+  const [password, setPassword] = useState('123456');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 

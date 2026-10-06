@@ -74,17 +74,26 @@ export async function POST(req: NextRequest) {
 
     let loggedInUser: { id: string; mobile: string; formattedMobile: string } | null = null;
 
-    // 1. Attempt Supabase Auth login with controlled email identity
+    // 1. Attempt Supabase Auth login (phone first, then controlled email identity)
     const supabase = await createServerSupabaseClient();
     if (supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: controlledEmail,
+      // 1a. Attempt direct Supabase phone authentication (+91XXXXXXXXXX)
+      let authRes = await supabase.auth.signInWithPassword({
+        phone: `+91${cleanMobile}`,
         password: password,
       });
 
-      if (!error && data?.user) {
+      // 1b. If phone auth returns an error or no user, try controlled email identity
+      if (authRes.error || !authRes.data?.user) {
+        authRes = await supabase.auth.signInWithPassword({
+          email: controlledEmail,
+          password: password,
+        });
+      }
+
+      if (!authRes.error && authRes.data?.user) {
         loggedInUser = {
-          id: data.user.id,
+          id: authRes.data.user.id,
           mobile: cleanMobile,
           formattedMobile: formatMobileNumber(cleanMobile),
         };

@@ -93,23 +93,43 @@ export async function POST(req: NextRequest) {
     if (!supabaseSuccess) {
       const browserOrAnonClient = await createServerSupabaseClient();
       if (browserOrAnonClient) {
-        const { data, error } = await browserOrAnonClient.auth.signUp({
-          email: controlledEmail,
+        // 2a. Attempt direct Supabase phone sign up (+91XXXXXXXXXX)
+        let signUpRes = await browserOrAnonClient.auth.signUp({
+          phone: `+91${cleanMobile}`,
           password: password,
-          options: {
-            data: {
-              phone_number: cleanMobile,
-              mobile_number: formatMobileNumber(cleanMobile),
-              display_name: 'TET Assist User',
-            },
-          },
         });
 
-        if (!error && data?.user) {
-          userId = data.user.id;
+        // 2b. If phone auth disabled or not configured, try controlled email identity
+        if (signUpRes.error || !signUpRes.data?.user) {
+          const phoneErr = signUpRes.error?.message?.toLowerCase() || '';
+          if (phoneErr.includes('already') || phoneErr.includes('exists') || phoneErr.includes('registered')) {
+            return NextResponse.json(
+              {
+                success: false,
+                error: 'An account with this mobile number already exists.',
+              },
+              { status: 400 }
+            );
+          }
+
+          signUpRes = await browserOrAnonClient.auth.signUp({
+            email: controlledEmail,
+            password: password,
+            options: {
+              data: {
+                phone_number: cleanMobile,
+                mobile_number: formatMobileNumber(cleanMobile),
+                display_name: 'TET Assist User',
+              },
+            },
+          });
+        }
+
+        if (!signUpRes.error && signUpRes.data?.user) {
+          userId = signUpRes.data.user.id;
           supabaseSuccess = true;
-        } else if (error) {
-          const msg = error.message.toLowerCase();
+        } else if (signUpRes.error) {
+          const msg = signUpRes.error.message.toLowerCase();
           if (msg.includes('already') || msg.includes('exists') || msg.includes('registered')) {
             return NextResponse.json(
               {
@@ -119,14 +139,14 @@ export async function POST(req: NextRequest) {
               { status: 400 }
             );
           }
-          console.error('[Registration Supabase Error]', error);
+          console.error('[Registration Supabase Error]', signUpRes.error);
           const isRateLimit = msg.includes('rate limit');
           return NextResponse.json(
             {
               success: false,
               error: isRateLimit
                 ? 'Supabase email send rate limit exceeded. Disable "Confirm email" in Supabase dashboard to register instantly.'
-                : error.message || 'Unable to register account in Supabase.',
+                : signUpRes.error.message || 'Unable to register account in Supabase.',
             },
             { status: 400 }
           );

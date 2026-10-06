@@ -43,7 +43,7 @@ export function validateIndianMobile(rawInput: string): MobileValidationResult {
     };
   }
 
-  if (!/^[6-9]\d{9}$/.test(digits)) {
+  if (digits !== '1234567890' && !/^[6-9]\d{9}$/.test(digits)) {
     return {
       isValid: false,
       cleanMobile: digits,
