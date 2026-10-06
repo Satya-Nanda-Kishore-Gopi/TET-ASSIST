@@ -151,17 +151,30 @@ export class TetAnalyticsService {
     if (questionError) throw new Error(questionError.message);
 
     const subjectMap = new Map((questions || []).map((q) => [q.question_id, q.subject]));
+    const { data: testQuestions, error: testQuestionError } = await supabase
+      .from('tet_test_questions')
+      .select('test_id,question_id')
+      .in('test_id', [...new Set(history.map((h) => h.testId))]);
+
+    if (testQuestionError) throw new Error(testQuestionError.message);
+
+    const testQuestionIds = (testQuestions || [])
+      .map((row) => row.question_id)
+      .filter((id) => subjectMap.has(id));
+
     const subjects = new Map<string, { answered: number; correct: number; totalQuestions: number }>();
+
+    for (const questionId of testQuestionIds) {
+      const subject = subjectMap.get(questionId) || 'Unknown';
+      const current = subjects.get(subject) || { answered: 0, correct: 0, totalQuestions: 0 };
+      current.totalQuestions += 1;
+      subjects.set(subject, current);
+    }
 
     for (const answer of answers || []) {
       const subject = subjectMap.get(answer.question_id) || 'Unknown';
-      const current = subjects.get(subject) || {
-        answered: 0,
-        correct: 0,
-        totalQuestions: 0,
-      };
+      const current = subjects.get(subject) || { answered: 0, correct: 0, totalQuestions: 0 };
       current.answered += 1;
-      current.totalQuestions += 1;
       if (answer.is_correct) current.correct += 1;
       subjects.set(subject, current);
     }
@@ -196,7 +209,7 @@ export class TetAnalyticsService {
         answered: data.answered,
         correct: data.correct,
         incorrect: data.answered - data.correct,
-        unanswered: 0,
+        unanswered: Math.max(data.totalQuestions - data.answered, 0),
         accuracy: data.answered
           ? Math.round((data.correct / data.answered) * 100)
           : 0,
