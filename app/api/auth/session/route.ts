@@ -30,60 +30,9 @@ function verifySession(token: string): any | null {
 }
 
 export async function GET() {
-  try {
-    // 1. Check HTTP-only secure cookie session
-    const cookieStore = await cookies();
-    const token = cookieStore.get('tet_session')?.value;
-
-    if (token) {
-      const sessionData = verifySession(token);
-      if (sessionData && sessionData.mobile) {
-        return NextResponse.json({
-          authenticated: true,
-          user: {
-            id: sessionData.id,
-            mobile: sessionData.mobile,
-            formattedMobile: sessionData.formattedMobile || formatMobileNumber(sessionData.mobile),
-          },
-        });
-      }
-    }
-
-    // 2. Check Supabase Auth server session
-    const supabase = await createServerSupabaseClient();
-    if (supabase) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const rawPhone =
-          user.user_metadata?.phone_number ||
-          user.email?.replace(/^candidate_/, '').replace(/@.*$/, '') ||
-          '';
-        const formatted =
-          user.user_metadata?.mobile_number || formatMobileNumber(rawPhone);
-
-        return NextResponse.json({
-          authenticated: true,
-          user: {
-            id: user.id,
-            mobile: rawPhone,
-            formattedMobile: formatted,
-          },
-        });
-      }
-    }
-
-    return NextResponse.json({
-      authenticated: false,
-      user: null,
-    });
-  } catch (error) {
-    console.error('[API /api/auth/session]', error);
-    return NextResponse.json({
-      authenticated: false,
-      user: null,
-    });
-  }
+  return NextResponse.json({
+    authenticated: false,
+    user: null,
+    openAccess: true,
+  });
 }

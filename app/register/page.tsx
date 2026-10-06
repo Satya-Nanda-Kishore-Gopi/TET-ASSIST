@@ -75,136 +75,40 @@ function RegisterForm() {
 
       {/* Registration Card */}
       <div className="bg-white rounded-3xl p-7 sm:p-9 border border-brand-border shadow-xs space-y-6">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+            <span>✨ Open Access Mode • అందరికీ ఉచిత ప్రవేశం</span>
+          </div>
           <h1 className="text-2xl font-extrabold text-brand-text tracking-tight">
-            Create your TET Assist account
+            Create Account Not Required
           </h1>
-          <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed font-telugu">
-            మీ TET Assist ఖాతాను సృష్టించండి • Start practicing mock tests
+          <p className="text-sm text-brand-text-muted leading-relaxed font-telugu">
+            TET Assist లో ఖాతా తెరవాల్సిన అవసరం లేదు. అన్ని మాక్ టెస్టులు ఉచితంగా అందుబాటులో ఉన్నాయి.
+          </p>
+          <p className="text-xs text-brand-text-subtle font-medium">
+            Account registration is currently disabled. All preparation features and practice exams are freely available.
           </p>
         </div>
 
-        {/* Error Notice Banner */}
-        {error && (
-          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn">
-            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
-            <span className="leading-snug font-medium">{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Mobile Number Field with +91 Prefix */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-brand-text">
-              Mobile Number (మొబైల్ నంబర్)
-            </label>
-            <div className="relative flex rounded-xl border border-brand-border bg-brand-bg-paper focus-within:border-brand-primary focus-within:ring-1 focus-within:ring-brand-primary transition-all">
-              <span className="inline-flex items-center px-3.5 py-3 rounded-l-xl bg-stone-100/80 text-brand-text font-bold text-sm border-r border-brand-border-light select-none">
-                +91
-              </span>
-              <input
-                type="tel"
-                inputMode="numeric"
-                autoComplete="tel"
-                maxLength={10}
-                required
-                value={mobile}
-                onChange={(e) => {
-                  const cleaned = e.target.value.replace(/\D/g, '');
-                  setMobile(cleaned);
-                  if (error) setError(null);
-                }}
-                placeholder="Enter mobile number"
-                className="w-full px-3.5 py-3 rounded-r-xl bg-transparent text-base sm:text-sm text-brand-text placeholder:text-brand-text-subtle focus:outline-none"
-              />
-            </div>
-            <p className="text-[11px] text-brand-text-subtle">
-              Valid 10-digit Indian mobile number
-            </p>
-          </div>
-
-          {/* Create Password Field */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-brand-text">
-              Password (పాస్‌వర్డ్)
-            </label>
-            <div className="relative rounded-xl border border-brand-border bg-brand-bg-paper focus-within:border-brand-primary focus-within:ring-1 focus-within:ring-brand-primary transition-all">
-              <input
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (error) setError(null);
-                }}
-                placeholder="Create Password"
-                className="w-full px-4 py-3 rounded-xl bg-transparent text-base sm:text-sm text-brand-text placeholder:text-brand-text-subtle focus:outline-none"
-              />
-            </div>
-            <p className="text-[11px] text-brand-text-subtle">
-              Must contain at least 6 characters
-            </p>
-          </div>
-
-          {/* Confirm Password Field */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-brand-text">
-              Confirm Password (పాస్‌వర్డ్ నిర్ధారించండి)
-            </label>
-            <div className="relative rounded-xl border border-brand-border bg-brand-bg-paper focus-within:border-brand-primary focus-within:ring-1 focus-within:ring-brand-primary transition-all">
-              <input
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  if (error) setError(null);
-                }}
-                placeholder="Confirm Password"
-                className="w-full px-4 py-3 rounded-xl bg-transparent text-base sm:text-sm text-brand-text placeholder:text-brand-text-subtle focus:outline-none"
-              />
-            </div>
-          </div>
-
-          {/* Large Create Account Button */}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full min-h-[48px] rounded-xl bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-base shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin text-white" />
-                <span>Creating account...</span>
-              </>
-            ) : (
-              <>
-                <span>Create Account</span>
-                <span className="font-telugu font-normal text-xs text-white/80">
-                  (ఖాతా సృష్టించండి)
-                </span>
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Footer: Login Link */}
-        <div className="pt-4 border-t border-brand-border-light text-center space-y-2">
-          <p className="text-xs sm:text-sm text-brand-text-muted">
-            Already have an account? (ఇప్పటికే ఖాతా ఉందా?)
-          </p>
+        <div className="pt-2">
           <Link
-            href={`/login${returnUrl !== '/' ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''}`}
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-primary hover:text-brand-primary-hover hover:underline transition-colors cursor-pointer"
+            href="/tests"
+            className="w-full min-h-[48px] rounded-xl bg-brand-primary hover:bg-brand-primary-hover text-white font-bold text-base shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] transition-all"
           >
-            <span>Login to your account</span>
-            <span className="font-telugu font-normal text-xs text-brand-secondary">
-              (లాగిన్ అవ్వండి)
+            <span>Start Practice Tests</span>
+            <span className="font-telugu font-normal text-xs text-white/80">
+              (మాక్ టెస్టులు ప్రారంభించండి)
             </span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-4 h-4 ml-1" />
+          </Link>
+        </div>
+
+        <div className="pt-4 border-t border-brand-border-light flex flex-col gap-2 text-center">
+          <Link
+            href="/"
+            className="text-xs font-bold text-brand-secondary hover:text-brand-primary hover:underline transition-colors"
+          >
+            ← Back to Home (హోమ్‌కి వెళ్లండి)
           </Link>
         </div>
       </div>

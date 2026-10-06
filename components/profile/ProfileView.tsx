@@ -93,13 +93,9 @@ export function ProfileView() {
                 <span>Logout (లాగ్ అవుట్)</span>
               </Button>
             ) : (
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold transition-colors cursor-pointer"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Login (లాగిన్)</span>
-              </Link>
+              <Badge variant="primary" size="md">
+                Open Access
+              </Badge>
             )}
           </div>
         </CardHeader>
@@ -108,19 +104,19 @@ export function ProfileView() {
           {/* User Mobile Number Section */}
           <div className="p-4 rounded-2xl bg-brand-bg-paper border border-brand-border-light space-y-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-brand-text-subtle">
-              Registered Mobile Number (మొబైల్ నంబర్)
+              Access Mode (ప్రవేశ విధానం)
             </span>
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-white border border-brand-border-light flex items-center justify-center text-brand-primary">
                 <Phone className="w-4 h-4" />
               </div>
               <p className="text-lg font-bold text-brand-text font-mono">
-                {user ? user.formattedMobile : 'Not logged in (లాగిన్ అవ్వలేదు)'}
+                {user ? user.formattedMobile : 'Open Candidate (ఉచిత ప్రవేశం)'}
               </p>
             </div>
             {!user && (
               <p className="text-xs text-brand-text-muted pt-1">
-                Please login with your mobile number to access all mock tests and study materials.
+                TET Assist is currently open. You can access all 10 mock tests and study materials directly without login.
               </p>
             )}
           </div>

@@ -140,18 +140,7 @@ export function Header() {
               </div>
             )}
           </div>
-        ) : (
-          <Link
-            href={`/login${pathname !== '/' ? `?returnUrl=${encodeURIComponent(pathname)}` : ''}`}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
-          >
-            <LogIn className="w-3.5 h-3.5" />
-            <span>Login</span>
-            <span className="font-telugu font-normal text-[11px] opacity-90 hidden sm:inline">
-              (లాగిన్)
-            </span>
-          </Link>
-        )}
+        ) : null}
       </div>
     </header>
   );

@@ -95,48 +95,23 @@ export class TetAttemptService {
       throw new Error('Test configuration is incomplete.');
     }
 
-    try {
-      const supabase = this.getClient();
-      const { data, error } = await supabase
-        .from('tet_attempts')
-        .insert({
-          test_id: testId,
-          user_id: userId || null,
-          total_marks: test.test.total_questions,
-        })
-        .select('id,test_id,started_at')
-        .single();
-
-      if (!error && data) {
-        return {
-          attemptId: data.id,
-          testId: data.test_id,
-          startedAt: data.started_at,
-          durationMinutes: test.test.duration_minutes,
-          remainingSeconds: this.getRemainingSeconds(data.started_at, test.test.duration_minutes),
-        };
-      }
-    } catch (err) {
-      console.warn('[TetAttemptService.startAttempt] Supabase insert warning:', err);
-    }
-
-    // Fallback: local session attempt store
-    const fallbackId = crypto.randomUUID();
+    // Anonymous session attempt store - do not save test results or user info to database
+    const attemptId = crypto.randomUUID();
     const startedAt = new Date().toISOString();
-    localAttempts.set(fallbackId, {
-      id: fallbackId,
+    localAttempts.set(attemptId, {
+      id: attemptId,
       test_id: testId,
-      user_id: userId || null,
+      user_id: null,
       started_at: startedAt,
       completed_at: null,
       score: null,
       total_marks: test.test.total_questions,
       status: 'in_progress',
     });
-    localAnswers.set(fallbackId, new Map());
+    localAnswers.set(attemptId, new Map());
 
     return {
-      attemptId: fallbackId,
+      attemptId,
       testId,
       startedAt,
       durationMinutes: test.test.duration_minutes,
