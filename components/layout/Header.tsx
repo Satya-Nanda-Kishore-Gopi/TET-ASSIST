@@ -13,7 +13,6 @@ const routeTitles: Record<string, { title: string; telugu: string }> = {
   '/study': { title: 'Study', telugu: 'స్టడీ మెటీరియల్' },
   '/study-plan': { title: 'Study Plan', telugu: 'స్టడీ ప్లాన్' },
   '/analysis': { title: 'Analysis', telugu: 'పరీక్షా విశ్లేషణ' },
-  '/admin': { title: 'Admin Ingestion Console', telugu: 'నిర్వాహక విభాగం' },
   '/profile': { title: 'Profile', telugu: 'ప్రొఫైల్' },
 };
 
