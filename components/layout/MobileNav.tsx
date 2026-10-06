@@ -9,7 +9,6 @@ import {
   FileText,
   BookOpen,
   Calendar,
-  BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -19,7 +18,6 @@ const mobileNavItems = [
   { href: '/tests', label: 'Tests', icon: FileText },
   { href: '/study', label: 'Study', icon: BookOpen },
   { href: '/study-plan', label: 'Plan', icon: Calendar },
-  { href: '/analysis', label: 'Analysis', icon: BarChart3 },
 ];
 
 export function MobileNav() {

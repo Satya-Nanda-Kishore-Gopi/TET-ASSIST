@@ -1,338 +1,269 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { StudyService, StudyTopicModule } from '@/lib/services/study';
-import { DatabaseDocument } from '@/lib/supabase/types';
+import { Card, CardContent } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
 import {
+  Brain,
+  Calculator,
   BookOpen,
-  Sparkles,
-  RotateCcw,
-  Flame,
-  AlertTriangle,
+  Languages,
   ArrowRight,
   Bot,
-  CheckCircle2,
   FileText,
-  LucideIcon,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
-type StudySection = 'important' | 'concepts' | 'revision' | 'frequent' | 'weak';
+interface SubjectInfo {
+  id: string;
+  name: string;
+  teluguName: string;
+  shortDesc: string;
+  icon: typeof Brain;
+  color: string;
+  accentBg: string;
+  keyConcepts: string[];
+}
+
+const SUBJECTS: SubjectInfo[] = [
+  {
+    id: 'cdp',
+    name: 'Child Development & Pedagogy',
+    teluguName: 'శిశు వికాసం మరియు పెడగాగి (CDP)',
+    shortDesc: 'Learn concepts, theories and teaching methods.',
+    icon: Brain,
+    color: 'text-emerald-700',
+    accentBg: 'bg-emerald-50 border-emerald-200',
+    keyConcepts: [
+      "Piaget's Stages of Cognitive Development (ఇంద్రియ ప్రచాలక, పూర్వ, మూర్త, అమూర్త దశలు)",
+      "Vygotsky's Sociocultural Theory & Scaffolding (సాంస్కృతిక-సామాజిక సిద్ధాంతం, MKO)",
+      'Kohlberg Moral Development Stages (నైతిక వికాస దశలు)',
+      'Inclusive Education & RPwD Act 2016 (సమ్మిళిత విద్య, 21 వైకల్యాలు)',
+      'Special Education Methods & Individualized Education Program (IEP)',
+    ],
+  },
+  {
+    id: 'mathematics',
+    name: 'Mathematics',
+    teluguName: 'గణిత శాస్త్రం & బోధనా పద్ధతులు',
+    shortDesc: 'Master number system, arithmetic, geometry and mathematics pedagogy.',
+    icon: Calculator,
+    color: 'text-amber-800',
+    accentBg: 'bg-amber-50 border-amber-200',
+    keyConcepts: [
+      'Number System, Place Values & Prime Numbers (సంఖ్యామానం, ప్రధాన సంఖ్యలు)',
+      'Fractions, Decimals & Percentages (భిన్నాలు, దశాంశాలు, శాతాలు)',
+      'Basic Geometry, Angles & Mensuration (రేఖాగణితం, వైశాల్యం, చుట్టుకొలత)',
+      'Mathematics Teaching Methods & Bloom Taxonomy (గణిత బోధనా పద్ధతులు, లక్ష్యాలు)',
+      'Teaching Learning Materials (TLM) in Mathematics for Primary Classes',
+    ],
+  },
+  {
+    id: 'telugu',
+    name: 'Telugu (Language I)',
+    teluguName: 'తెలుగు భాష మరియు బోధనా పద్ధతులు',
+    shortDesc: 'Telugu grammar, comprehension, vocabulary and language teaching methods.',
+    icon: BookOpen,
+    color: 'text-emerald-800',
+    accentBg: 'bg-emerald-50 border-emerald-200',
+    keyConcepts: [
+      'వర్ణమాల, అచ్చులు, హల్లులు మరియు ఉభయాక్షరాలు',
+      'సంధులు: సవర్ణదీర్ఘ, గుణ, యణాదేశ, వృద్ధి మరియు తెలుగు సంధులు',
+      'సమాసాలు: తత్పురుష, ద్వంద్వ, ద్విగు, బహువ్రీహి సమాసాలు',
+      'భాషా నైపుణ్యాలు: శ్రవణం, భాషణం, పఠనం, లేఖనం (LSRW)',
+      'నిరంతర సమగ్ర మూల్యాంకనం (CCE) మరియు బోధనా పద్ధతులు',
+    ],
+  },
+  {
+    id: 'english',
+    name: 'English (Language II)',
+    teluguName: 'ఆంగ్ల భాష మరియు బోధనా పద్ధతులు',
+    shortDesc: 'Grammar concepts, vocabulary, sentence structures and English language pedagogy.',
+    icon: Languages,
+    color: 'text-stone-800',
+    accentBg: 'bg-stone-100 border-stone-200',
+    keyConcepts: [
+      'Parts of Speech: Nouns, Pronouns, Verbs, Adjectives, Adverbs, Prepositions',
+      'Tenses & Subject-Verb Agreement in context',
+      'Active & Passive Voice, Direct & Indirect Speech rules',
+      'Reading Comprehension & Vocabulary usage (Synonyms, Antonyms, Idioms)',
+      'Methods of Teaching English: Direct Method, Bilingual, Communicative Approach (CLT)',
+    ],
+  },
+];
 
 export function StudyView() {
-  const [activeSection, setActiveSection] = useState<StudySection>('important');
-  const [modules, setModules] = useState<StudyTopicModule[]>([]);
-  const [studyDocuments, setStudyDocuments] = useState<DatabaseDocument[]>([]);
-  const [selectedSubject, setSelectedSubject] = useState<string>('all');
-
-  useEffect(() => {
-    let isMounted = true;
-    async function loadData() {
-      const [mods, docs] = await Promise.all([
-        StudyService.getTopicModules(selectedSubject),
-        StudyService.getStudyDocuments(selectedSubject),
-      ]);
-      if (isMounted) {
-        setModules(mods);
-        setStudyDocuments(docs);
-      }
-    }
-    loadData();
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedSubject]);
-
-  const sections: Array<{
-    id: StudySection;
-    label: string;
-    telugu: string;
-    icon: LucideIcon;
-    description: string;
-  }> = [
-    {
-      id: 'important',
-      label: 'Important Topics',
-      telugu: 'ముఖ్యమైన అంశాలు',
-      icon: Sparkles,
-      description: 'High-yield curriculum topics based on Special APTET syllabus weightage',
-    },
-    {
-      id: 'concepts',
-      label: 'Concepts',
-      telugu: 'మూల భావనలు',
-      icon: BookOpen,
-      description: 'Foundational pedagogical principles, theories of learning, and special education methods',
-    },
-    {
-      id: 'revision',
-      label: 'Revision',
-      telugu: 'పునశ్చరణ',
-      icon: RotateCcw,
-      description: 'Quick recall summaries and formula sheets for active memory retention',
-    },
-    {
-      id: 'frequent',
-      label: 'Frequently Asked Topics',
-      telugu: 'ఎక్కువగా అడిగే అంశాలు',
-      icon: Flame,
-      description: 'Topics with highest recurrence across past APTET question papers',
-    },
-    {
-      id: 'weak',
-      label: 'Weak Topics',
-      telugu: 'దృష్టి సారించాల్సిన బలహీన అంశాలు',
-      icon: AlertTriangle,
-      description: 'Identified deficit areas that need focused revision',
-    },
-  ];
-
-  const currentSection = sections.find((s) => s.id === activeSection)!;
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>('cdp');
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-12">
+    <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header */}
-      <div className="space-y-1.5">
-        <div className="flex items-center gap-2">
-          <Badge variant="primary">Special APTET Study Vault</Badge>
-          <Badge variant="accent">Preloaded Curriculum Grounding</Badge>
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-text tracking-tight">
-          స్టడీ మెటీరియల్ (Study & Concepts)
-        </h2>
-        <p className="text-sm text-brand-text-muted max-w-2xl leading-relaxed">
-          Master Child Development & Pedagogy, Special Education teaching strategies, and curriculum domains derived directly from official government syllabi and previous question papers.
+      <div className="space-y-2">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-brand-text tracking-tight">
+          Study (చదువు)
+        </h1>
+        <p className="text-xs sm:text-sm text-brand-text-muted max-w-2xl leading-relaxed">
+          Select a subject to explore core concepts, theories, and syllabus guidelines for Special APTET Paper 1A.
         </p>
       </div>
 
-      {/* Subject Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-brand-card border border-brand-border shadow-xs">
-        <div className="flex items-center gap-2 text-xs font-bold text-brand-text-muted uppercase tracking-wider">
-          <BookOpen className="w-4 h-4 text-brand-primary" />
-          <span>Filter By Subject:</span>
-        </div>
+      {/* 4 Subjects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {SUBJECTS.map((subject) => {
+          const Icon = subject.icon;
+          const isSelected = selectedSubjectId === subject.id;
 
-        <div className="flex flex-wrap gap-1.5">
-          {[
-            { id: 'all', label: 'All Subjects' },
-            { id: 'Child Development', label: 'CDP Special' },
-            { id: 'Telugu', label: 'Language I (Telugu)' },
-            { id: 'English', label: 'Language II (English)' },
-            { id: 'Mathematics', label: 'Mathematics' },
-          ].map((sub) => (
-            <button
-              key={sub.id}
-              onClick={() => setSelectedSubject(sub.id)}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
-                selectedSubject === sub.id
-                  ? 'bg-brand-primary text-white shadow-xs'
-                  : 'bg-brand-bg-paper text-brand-text-muted hover:text-brand-text border border-brand-border-light'
-              }`}
-            >
-              {sub.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Section Navigation Tabs */}
-      <div className="flex overflow-x-auto gap-2 pb-1 border-b border-brand-border no-scrollbar">
-        {sections.map((section) => {
-          const Icon = section.icon;
-          const isActive = activeSection === section.id;
           return (
-            <button
-              key={section.id}
-              onClick={() => setActiveSection(section.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                isActive
-                  ? 'bg-brand-primary text-white shadow-xs'
-                  : 'bg-brand-card hover:bg-brand-bg-paper text-brand-text-muted hover:text-brand-text border border-brand-border-light'
+            <Card
+              key={subject.id}
+              className={`border transition-all rounded-2xl bg-white ${
+                isSelected
+                  ? 'border-brand-primary ring-1 ring-brand-primary shadow-xs'
+                  : 'border-brand-border hover:border-brand-primary/40'
               }`}
             >
-              <Icon className="w-4 h-4" />
-              <span>{section.label}</span>
-              <span className="text-[11px] opacity-80">({section.telugu})</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Section Description */}
-      <div className="p-4 rounded-2xl bg-brand-primary-light/40 border border-brand-primary/20">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-primary flex items-center justify-center text-white shrink-0">
-            {React.createElement(currentSection.icon, { className: 'w-5 h-5' })}
-          </div>
-          <div>
-            <h3 className="font-bold text-base text-brand-text">
-              {currentSection.label} • {currentSection.telugu}
-            </h3>
-            <p className="text-xs text-brand-text-muted">{currentSection.description}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Concept & Topic Modules Grid */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-brand-text-muted">
-            Foundational Modules ({modules.length} Available)
-          </span>
-          <Link href="/questions" className="text-xs font-semibold text-brand-primary hover:underline flex items-center gap-1">
-            <span>Practice related questions in Bank</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {modules.map((mod) => (
-            <Card
-              key={mod.id}
-              className="border-brand-border bg-brand-card hover:border-brand-primary/40 transition-all flex flex-col justify-between"
-            >
-              <CardContent className="p-5 space-y-3.5 flex-1 flex flex-col justify-between">
-                <div>
-                  {/* Top Badges */}
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand-primary-light text-brand-primary">
-                      ~{mod.weightageQuestions} Exam Questions
-                    </span>
-                    <Badge variant="accent" size="sm" className="capitalize text-[10px]">
-                      {mod.importance.replace('_', ' ')} yield
-                    </Badge>
+              <CardContent className="p-5 sm:p-6 flex flex-col justify-between h-full space-y-4">
+                <div className="space-y-3">
+                  {/* Icon & Subject Header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${subject.accentBg}`}
+                      >
+                        <Icon className={`w-6 h-6 stroke-[2] ${subject.color}`} />
+                      </div>
+                      <div>
+                        <h2 className="text-base sm:text-lg font-bold text-brand-text">
+                          {subject.name}
+                        </h2>
+                        <p className="text-xs font-medium text-brand-secondary font-telugu">
+                          {subject.teluguName}
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  <h4 className="font-bold text-base text-brand-text">{mod.title}</h4>
-                  <p className="text-xs font-medium text-brand-secondary">{mod.teluguTitle}</p>
-                  <p className="text-xs text-brand-text-muted leading-relaxed mt-2">{mod.summary}</p>
+                  {/* Short Description */}
+                  <p className="text-xs sm:text-sm text-brand-text-muted leading-relaxed">
+                    &ldquo;{subject.shortDesc}&rdquo;
+                  </p>
 
-                  {/* Key Pedagogical Points */}
-                  <div className="mt-3 p-3 rounded-xl bg-brand-bg-paper border border-brand-border-light space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-text-muted block">
-                      Core Exam Takeaways:
+                  {/* Key Concepts List Preview */}
+                  <div className="pt-2 border-t border-brand-border-light space-y-1.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-brand-text-subtle">
+                      Core Topics:
                     </span>
-                    <ul className="space-y-1">
-                      {mod.keyPoints.map((pt, i) => (
-                        <li key={i} className="text-xs text-brand-text flex items-start gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span className="leading-snug">{pt}</span>
+                    <ul className="space-y-1 text-xs text-brand-text">
+                      {subject.keyConcepts.slice(0, 3).map((concept, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-brand-secondary shrink-0 mt-0.5" />
+                          <span className="truncate">{concept}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
 
-                {/* Footer Actions */}
-                <div className="pt-3 border-t border-brand-border-light flex items-center justify-between gap-2">
-                  <span className="text-[10px] text-brand-text-subtle truncate max-w-[200px]">
-                    Source: {mod.sourceDocTitle || 'Official Curriculum'}
-                  </span>
-                  <Link href="/chat">
-                    <Button variant="outline" size="sm" className="gap-1.5 text-xs font-semibold">
-                      <Bot className="w-3.5 h-3.5 text-brand-accent" />
-                      <span>Ask AI Tutor</span>
-                    </Button>
-                  </Link>
+                {/* Open / Study Button */}
+                <div className="pt-2">
+                  <Button
+                    variant={isSelected ? 'primary' : 'outline'}
+                    size="md"
+                    onClick={() =>
+                      setSelectedSubjectId(isSelected ? null : subject.id)
+                    }
+                    className="w-full justify-center gap-2 font-semibold text-xs sm:text-sm cursor-pointer"
+                  >
+                    <span>{isSelected ? 'Viewing Notes' : 'Study'}</span>
+                    <span className="font-telugu font-normal text-xs opacity-90">
+                      (చదువు)
+                    </span>
+                    {isSelected ? (
+                      <ChevronUp className="w-4 h-4 ml-1" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 ml-1" />
+                    )}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {/* Preloaded Official Documents & Blueprints Section */}
-      {studyDocuments.length > 0 && (
-        <div className="space-y-3 pt-4 border-t border-brand-border">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-brand-text-muted flex items-center gap-2">
-            <FileText className="w-4 h-4 text-brand-primary" />
-            <span>Preloaded Syllabus & Reference Documents</span>
-          </h3>
+      {/* Expanded Study Details for Selected Subject */}
+      {selectedSubjectId && (
+        <section className="p-6 rounded-2xl bg-white border border-brand-border shadow-2xs space-y-5 animate-fadeIn">
+          {(() => {
+            const current = SUBJECTS.find((s) => s.id === selectedSubjectId);
+            if (!current) return null;
+            const CurrentIcon = current.icon;
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {studyDocuments.map((doc) => (
-              <Card key={doc.id} className="border-brand-border bg-brand-card">
-                <CardContent className="p-4 space-y-2">
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-primary-light text-brand-primary capitalize">
-                    {doc.document_type.replace('_', ' ')}
-                  </span>
-                  <h5 className="font-bold text-sm text-brand-text">{doc.title}</h5>
-                  <p className="text-xs text-brand-text-muted line-clamp-2">{doc.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+            return (
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-brand-border-light">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${current.accentBg}`}
+                    >
+                      <CurrentIcon className={`w-5 h-5 stroke-[2] ${current.color}`} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-brand-text">
+                        {current.name} Study Notes
+                      </h3>
+                      <p className="text-xs text-brand-secondary font-telugu">
+                        {current.teluguName} • ముఖ్యమైన భావనలు
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href="/chat"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-brand-primary border border-emerald-200 text-xs font-semibold transition-colors"
+                    >
+                      <Bot className="w-3.5 h-3.5" />
+                      <span>Ask AI Doubt</span>
+                    </Link>
+
+                    <Link
+                      href="/tests"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-semibold transition-colors"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Practice in Tests</span>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-brand-text-subtle">
+                    High-Yield Topics for Special APTET Paper 1A
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {current.keyConcepts.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3.5 rounded-xl bg-brand-bg-paper border border-brand-border-light text-xs font-medium text-brand-text space-y-1"
+                      >
+                        <div className="flex items-center gap-2 font-semibold text-brand-primary">
+                          <CheckCircle2 className="w-4 h-4 text-brand-secondary shrink-0" />
+                          <span>Topic {idx + 1}</span>
+                        </div>
+                        <p className="leading-relaxed pl-6">{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+        </section>
       )}
-
-      {/* Syllabus Pillar Guide for Teachers */}
-      <div className="space-y-3 pt-4 border-t border-brand-border">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-brand-text-muted">
-          Special APTET Curriculum Domains (Paper I & Paper II)
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            {
-              title: 'Child Development & Pedagogy',
-              telugu: 'శిశు వికాసము మరియు పెడగోగి',
-              weightage: '30 Marks',
-              topics: 'Growth, Development, Theories (Piaget, Vygotsky, Kohlberg)',
-            },
-            {
-              title: 'Special Education & Inclusive Classroom',
-              telugu: 'ప్రత్యేక విద్య మరియు సమ్మిళిత తరగతి గది',
-              weightage: 'Special Core',
-              topics: 'RPwD Act 2016, Learning Disabilities, Assistive Tech',
-            },
-            {
-              title: 'Language I (Telugu)',
-              telugu: 'భాష I (తెలుగు బోధనాంశాలు)',
-              weightage: '30 Marks',
-              topics: 'వ్యాకరణం, పఠనావగాహన, బోధనా పద్ధతులు',
-            },
-            {
-              title: 'Language II (English)',
-              telugu: 'భాష II (English Medium)',
-              weightage: '30 Marks',
-              topics: 'Grammar, Reading Comprehension, Pedagogy of English',
-            },
-            {
-              title: 'Mathematics Methodology',
-              telugu: 'గణిత బోధనా పద్ధతులు',
-              weightage: '30 Marks',
-              topics: 'Number system, Arithmetic, Teaching-Learning Material',
-            },
-            {
-              title: 'Environmental Studies',
-              telugu: 'పరిసరాల విజ్ఞానం బోధన',
-              weightage: '30 Marks',
-              topics: 'Living world, Natural resources, Community education',
-            },
-          ].map((domain) => (
-            <Card key={domain.title} className="border-brand-border bg-brand-bg-paper/60">
-              <CardContent className="p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-brand-primary px-2 py-0.5 rounded bg-brand-primary-light">
-                    {domain.weightage}
-                  </span>
-                  <span className="text-[10px] text-brand-text-subtle font-semibold">
-                    Core Domain
-                  </span>
-                </div>
-                <h4 className="font-bold text-sm text-brand-text">{domain.title}</h4>
-                <p className="text-xs text-brand-secondary font-medium">{domain.telugu}</p>
-                <p className="text-xs text-brand-text-muted pt-1 border-t border-brand-border-light">
-                  {domain.topics}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

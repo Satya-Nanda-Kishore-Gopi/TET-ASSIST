@@ -1,27 +1,46 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, GraduationCap, Globe } from 'lucide-react';
+import { User, GraduationCap, Globe, LogOut, LogIn, ChevronDown } from 'lucide-react';
 import { APP_CONFIG } from '@/lib/constants/theme';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 const routeTitles: Record<string, { title: string; telugu: string }> = {
-  '/': { title: 'Dashboard', telugu: 'డ్యాష్‌బోర్డ్' },
-  '/chat': { title: 'Ask AI', telugu: 'ఏఐ అసిస్టెంట్' },
-  '/tests': { title: 'Tests', telugu: 'పరీక్షలు' },
-  '/study': { title: 'Study', telugu: 'స్టడీ మెటీరియల్' },
-  '/study-plan': { title: 'Study Plan', telugu: 'స్టడీ ప్లాన్' },
-  '/analysis': { title: 'Analysis', telugu: 'పరీక్షా విశ్లేషణ' },
+  '/': { title: 'TET Assist', telugu: 'హోమ్' },
+  '/chat': { title: 'Ask AI', telugu: 'AI ని అడగండి' },
+  '/tests': { title: 'Mock Tests', telugu: 'మాక్ పరీక్షలు' },
+  '/study': { title: 'Study', telugu: 'చదువు' },
+  '/study-plan': { title: 'Study Plan', telugu: 'చదువు ప్రణాళిక' },
   '/profile': { title: 'Profile', telugu: 'ప్రొఫైల్' },
+  '/login': { title: 'Login', telugu: 'లాగిన్' },
+  '/register': { title: 'Register', telugu: 'ఖాతా సృష్టించండి' },
 };
 
 export function Header() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
   const currentRoute = routeTitles[pathname] || {
     title: APP_CONFIG.name,
     telugu: APP_CONFIG.nameTelugu,
   };
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-20 bg-brand-card/90 backdrop-blur-md border-b border-brand-border px-4 sm:px-6 py-3.5 flex items-center justify-between">
@@ -42,7 +61,7 @@ export function Header() {
           <h1 className="font-bold text-lg text-brand-text tracking-tight">
             {currentRoute.title}
           </h1>
-          <span className="text-sm font-medium text-brand-text-subtle">
+          <span className="text-sm font-medium text-brand-text-subtle font-telugu">
             • {currentRoute.telugu}
           </span>
         </div>
@@ -62,15 +81,77 @@ export function Header() {
           <span>తెలుగు / EN</span>
         </div>
 
-        {/* Profile Link */}
-        <Link
-          href="/profile"
-          className="w-9 h-9 rounded-xl bg-brand-primary-light hover:bg-brand-primary hover:text-white text-brand-primary border border-brand-primary/20 flex items-center justify-center transition-colors duration-150"
-          title="Profile & Settings"
-          aria-label="Profile and Settings"
-        >
-          <User className="w-4 h-4" />
-        </Link>
+        {/* Profile Menu Button */}
+        {user ? (
+          <div className="relative" ref={menuRef}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-brand-primary-light hover:bg-brand-primary-light/80 text-brand-primary border border-brand-primary/20 transition-all cursor-pointer"
+              title="Profile & Account"
+              aria-label="Profile and Account Menu"
+            >
+              <div className="w-7 h-7 rounded-lg bg-brand-primary text-white flex items-center justify-center font-bold text-xs">
+                <User className="w-4 h-4" />
+              </div>
+              <span className="hidden sm:inline text-xs font-bold font-mono">
+                {user.formattedMobile}
+              </span>
+              <ChevronDown className="w-3.5 h-3.5 opacity-70" />
+            </button>
+
+            {/* Profile Dropdown Menu */}
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-brand-border shadow-lg p-2 z-50 animate-fadeIn space-y-1">
+                <div className="p-3 rounded-xl bg-brand-bg-paper border border-brand-border-light space-y-0.5">
+                  <p className="text-xs font-bold text-brand-text">
+                    TET Assist User
+                  </p>
+                  <p className="text-xs font-mono font-semibold text-brand-primary">
+                    {user.formattedMobile}
+                  </p>
+                  <p className="text-[10px] text-brand-secondary font-medium font-telugu pt-0.5">
+                    Special APTET Candidate
+                  </p>
+                </div>
+
+                <Link
+                  href="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-brand-text hover:bg-brand-bg-paper transition-colors"
+                >
+                  <User className="w-4 h-4 text-brand-secondary" />
+                  <span>Profile & Preferences (ప్రొఫైల్)</span>
+                </Link>
+
+                <div className="border-t border-brand-border-light pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout (లాగ్ అవుట్)</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link
+            href={`/login${pathname !== '/' ? `?returnUrl=${encodeURIComponent(pathname)}` : ''}`}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Login</span>
+            <span className="font-telugu font-normal text-[11px] opacity-90 hidden sm:inline">
+              (లాగిన్)
+            </span>
+          </Link>
+        )}
       </div>
     </header>
   );

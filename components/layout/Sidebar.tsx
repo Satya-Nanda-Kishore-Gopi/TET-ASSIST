@@ -9,33 +9,27 @@ import {
   FileText,
   BookOpen,
   Calendar,
-  BarChart3,
-  Files,
   GraduationCap,
   User,
   Sparkles,
   Info,
-  HelpCircle,
-  ShieldCheck,
 } from 'lucide-react';
 import { APP_CONFIG, NAV_ITEMS } from '@/lib/constants/theme';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 const iconMap = {
   Home,
   Bot,
-  HelpCircle,
   FileText,
   BookOpen,
   Calendar,
-  BarChart3,
-  Files,
-  ShieldCheck,
 };
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   return (
     <aside className="hidden lg:flex flex-col w-64 xl:w-72 bg-brand-card border-r border-brand-border h-screen sticky top-0 shrink-0 z-30 select-none">
@@ -137,10 +131,10 @@ export function Sidebar() {
           </div>
           <div className="flex flex-col min-w-0 flex-1">
             <span className="text-xs font-semibold text-brand-text truncate">
-              ఉపాధ్యాయ అభ్యర్థి
+              {user ? 'TET Assist User' : 'ఉపాధ్యాయ అభ్యర్థి'}
             </span>
-            <span className="text-[11px] text-brand-text-muted truncate">
-              Special APTET Aspirant
+            <span className="text-[11px] text-brand-text-muted truncate font-mono">
+              {user ? user.formattedMobile : 'Special APTET Aspirant'}
             </span>
           </div>
         </Link>

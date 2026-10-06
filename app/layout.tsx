@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Noto_Sans_Telugu } from 'next/font/google';
 import './globals.css';
 import { AppShell } from '@/components/layout/AppShell';
+import { AuthProvider } from '@/lib/auth/AuthContext';
 import { APP_CONFIG } from '@/lib/constants/theme';
 
 const sansFont = Plus_Jakarta_Sans({
@@ -44,7 +45,9 @@ export default function RootLayout({
   return (
     <html lang="te" className={`${sansFont.variable} ${teluguFont.variable}`}>
       <body className="bg-brand-bg text-brand-text min-h-screen flex flex-col font-sans selection:bg-brand-accent-light selection:text-brand-accent">
-        <AppShell>{children}</AppShell>
+        <AuthProvider>
+          <AppShell>{children}</AppShell>
+        </AuthProvider>
       </body>
     </html>
   );

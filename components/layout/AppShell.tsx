@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
@@ -10,6 +11,16 @@ interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const pathname = usePathname();
+  const isTestScreen =
+    pathname.startsWith('/tet-test') ||
+    pathname.startsWith('/tet-result') ||
+    pathname.startsWith('/tet-review');
+
+  if (isTestScreen) {
+    return <div className="min-h-screen bg-brand-bg w-full">{children}</div>;
+  }
+
   return (
     <div className="flex min-h-screen bg-brand-bg font-sans">
       {/* Desktop Sidebar */}

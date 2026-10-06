@@ -18,9 +18,14 @@ export async function POST(
       );
     }
 
-    await TetAttemptService.saveAnswer(attemptId, questionId, selectedOption);
+    const feedback = await TetAttemptService.saveAnswer(attemptId, questionId, selectedOption);
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      isCorrect: feedback.isCorrect,
+      correctOption: feedback.correctOption,
+      selectedOption: feedback.selectedOption,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to save answer.';
     console.error('[API /api/tet/attempts/[attemptId]/answers]', message);

@@ -6,8 +6,6 @@ import {
   FileText,
   BookOpen,
   Calendar,
-  Files,
-  BarChart3,
   ArrowRight,
 } from 'lucide-react';
 
@@ -56,28 +54,6 @@ export function ActionCards() {
       accentBg: 'bg-[#553E2D]/10 text-[#553E2D] border-[#553E2D]/20',
       badge: 'Personalized',
       description: 'Structure daily study routines and target marks before exam day.',
-    },
-    {
-      title: 'My Documents',
-      teluguTitle: 'నా డాక్యుమెంట్లు',
-      subtitle: 'Upload and ask questions from PDFs',
-      href: '/documents',
-      icon: Files,
-      color: 'bg-[#7A5B44]',
-      accentBg: 'bg-[#7A5B44]/10 text-[#7A5B44] border-[#7A5B44]/20',
-      badge: 'Preloaded + User PDFs',
-      description: 'Official syllabus, reference textbooks, and custom notes.',
-    },
-    {
-      title: 'Analysis',
-      teluguTitle: 'పనితీరు విశ్లేషణ',
-      subtitle: 'View your preparation performance',
-      href: '/analysis',
-      icon: BarChart3,
-      color: 'bg-[#9C4222]',
-      accentBg: 'bg-[#9C4222]/10 text-[#9C4222] border-[#9C4222]/20',
-      badge: 'Insights',
-      description: 'Track weak topics, frequently appearing questions, and subject readiness.',
     },
   ];
 

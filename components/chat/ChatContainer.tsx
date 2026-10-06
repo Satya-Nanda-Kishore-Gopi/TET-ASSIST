@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatMode, ChatMessage } from '@/types';
-import { ModeSelector } from './ModeSelector';
 import { ChatEmptyState } from './ChatEmptyState';
 import { ChatInput } from './ChatInput';
 import { Bot, User, AlertCircle, RefreshCw } from 'lucide-react';
@@ -112,7 +111,7 @@ export function ChatContainer() {
   };
 
   return (
-    <Card className="flex flex-col h-[calc(100vh-140px)] min-h-[550px] border-brand-border bg-brand-card overflow-hidden">
+    <Card className="flex flex-col h-[calc(100vh-140px)] min-h-[550px] border-brand-border bg-brand-card overflow-hidden rounded-2xl shadow-xs">
       {/* Header Bar */}
       <div className="p-4 sm:p-5 border-b border-brand-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-brand-card">
         <div>
@@ -120,20 +119,20 @@ export function ChatContainer() {
             <h2 className="text-xl font-bold text-brand-text tracking-tight">
               Ask AI
             </h2>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-brand-primary-light text-brand-primary font-medium">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
               Special APTET
             </span>
           </div>
           <p className="text-xs text-brand-text-muted mt-0.5">
-            Special APTET preparation assistant • తెలుగు మరియు ఆంగ్ల వివరణలు
+            Ask anything about your TET preparation • తెలుగు &amp; English
           </p>
         </div>
 
-        {/* Mode Selector */}
-        <ModeSelector
-          currentMode={currentMode}
-          onSelectMode={(mode) => setCurrentMode(mode)}
-        />
+        {/* Clean status pill */}
+        <div className="flex items-center gap-2 text-xs font-semibold text-brand-primary bg-emerald-50/60 px-3 py-1.5 rounded-xl border border-emerald-200/60 self-start sm:self-center">
+          <Bot className="w-4 h-4 text-emerald-600" />
+          <span>Educational Assistant Active</span>
+        </div>
       </div>
 
       {/* Error / Alert Banner */}
